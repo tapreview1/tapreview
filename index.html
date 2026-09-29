@@ -141,6 +141,13 @@ dialog.legal mark{background:#fff3b0;padding:1px 4px;border-radius:4px}
 #cookie-banner button{border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600}
 #cookie-banner .cb-accept{background:#ffd166;color:#12142b}
 #cookie-banner .cb-reject{background:transparent;color:#fff;border:1px solid #555}
+
+#resenas{background:var(--surface,#fff)}
+.rw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:22px}
+.rw-card{border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:18px}
+.rw-stars{color:#f5a623;letter-spacing:2px;margin-bottom:8px}
+.rw-quote{margin:0 0 10px;font-size:.95rem;line-height:1.5}
+.rw-name{font-weight:700;font-size:.85rem;opacity:.75}
 </style>
 </head>
 <body>
@@ -219,6 +226,28 @@ dialog.legal mark{background:#fff3b0;padding:1px 4px;border-radius:4px}
       </div>
     </div>
     <p class="hint">Toca la tarjeta para ver la demo que puedes enseñar a tus clientes</p>
+  </div>
+</div></section>
+
+<!-- RESEÑAS: para añadir una nueva, copia un bloque .rw-card entero y cambia estrellas, texto y nombre -->
+<section id="resenas"><div class="wrap">
+  <h2>Lo que dicen quienes ya las revenden</h2>
+  <div class="rw-grid">
+    <div class="rw-card">
+      <div class="rw-stars">★★★★★</div>
+      <p class="rw-quote">"EJEMPLO — sustituye por una reseña real: las tarjetas llegaron rápido y a mis clientes les encantó lo fácil que era colocarlas."</p>
+      <div class="rw-name">— Nombre del cliente</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-stars">★★★★★</div>
+      <p class="rw-quote">"EJEMPLO — sustituye por una reseña real: buena calidad y fácil de vender a los negocios de mi zona."</p>
+      <div class="rw-name">— Nombre del cliente</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-stars">★★★★★</div>
+      <p class="rw-quote">"EJEMPLO — sustituye por una reseña real: el pack de 10 me salió muy a cuenta para empezar."</p>
+      <div class="rw-name">— Nombre del cliente</div>
+    </div>
   </div>
 </div></section>
 
@@ -313,7 +342,7 @@ dialog.legal mark{background:#fff3b0;padding:1px 4px;border-radius:4px}
     <h4>Base legal</h4>
     <p>Ejecución de un contrato de compraventa (art. 6.1.b RGPD).</p>
     <h4>¿Con quién se comparten?</h4>
-    <p>Con Stripe Payments Europe (procesador de pagos) y con la empresa de transporte usada para el envío. Stripe puede transferir datos a EE.UU. amparándose en cláusulas contractuales tipo aprobadas por la UE.</p>
+    <p>Con Stripe Payments Europe (procesador de pagos) y con la empresa de transporte usada para el envío. Stripe puede transferir datos a EE.UU. amparándose en cláusulas contractuales tipo aprobadas por la UE. Si aceptas las cookies de analítica, también usamos Google Analytics (Google Ireland Ltd.) para medir el uso de la web, con la IP anonimizada.</p>
     <h4>Conservación</h4>
     <p>Mientras exista relación comercial y, después, el tiempo exigido por obligaciones fiscales y contables.</p>
     <h4>Tus derechos</h4>
@@ -327,11 +356,11 @@ dialog.legal mark{background:#fff3b0;padding:1px 4px;border-radius:4px}
     <h4>¿Qué son las cookies?</h4>
     <p>Pequeños archivos que un sitio web guarda en tu navegador para recordar información.</p>
     <h4>Cookies que usa esta web</h4>
-    <p>Esta web solo usa una cookie técnica propia, necesaria para recordar tu preferencia sobre este aviso de cookies (no requiere consentimiento por ser estrictamente necesaria). Actualmente no usamos cookies de analítica ni de publicidad propias.</p>
+    <p><strong>Técnicas (siempre activas):</strong> una cookie propia para recordar tu preferencia sobre este aviso.</p>
+    <p><strong>Analíticas (solo si aceptas):</strong> usamos Google Analytics para saber cuánta gente visita la web y qué páginas ve. Estas cookies solo se activan si pulsas "Aceptar" en el aviso de cookies; si pulsas "Rechazar", no se instalan. Google puede tratar estos datos según su propia política de privacidad (policies.google.com/privacy).</p>
     <p>Al pulsar "Comprar" sales de esta web y entras en la pasarela de pago de Stripe, que puede instalar sus propias cookies bajo su propia política de privacidad, ajena a TapReview.</p>
     <h4>Cómo gestionarlas</h4>
-    <p>Puedes eliminar o bloquear las cookies desde la configuración de tu navegador en cualquier momento.</p>
-    <p><em>Si en el futuro se incorporan herramientas de analítica o publicidad, esta política se actualizará para reflejarlo.</em></p>
+    <p>Puedes cambiar tu decisión eliminando la cookie <code>tapreview-cookie-consent</code> desde la configuración de tu navegador, lo que hará que el aviso vuelva a aparecer. También puedes bloquear todas las cookies desde los ajustes de tu navegador en cualquier momento.</p>
   </div>
 </dialog>
 
@@ -430,14 +459,29 @@ dialog.legal mark{background:#fff3b0;padding:1px 4px;border-radius:4px}
     });
   });
   var banner=document.getElementById('cookie-banner');
+  function loadGA(){
+    if(window.__gaLoaded) return;
+    window.__gaLoaded = true;
+    var s=document.createElement('script');
+    s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id=G-ZLT4G99LH4';
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-ZLT4G99LH4', { anonymize_ip: true });
+  }
   try{
-    if(localStorage.getItem('tapreview-cookie-consent')){
+    var consent = localStorage.getItem('tapreview-cookie-consent');
+    if(consent){
       banner.style.display='none';
+      if(consent==='accepted') loadGA();
     }
   }catch(e){}
   function setConsent(v){
     try{ localStorage.setItem('tapreview-cookie-consent', v); }catch(e){}
     banner.style.display='none';
+    if(v==='accepted') loadGA();
   }
   var acc=document.getElementById('cb-accept'), rej=document.getElementById('cb-reject');
   if(acc) acc.addEventListener('click',function(){setConsent('accepted')});
